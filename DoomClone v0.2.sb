@@ -1,0 +1,110 @@
+JanelaAltura = (400)
+JanelaLargura = (600)
+GraphicsWindow.CanResize = ("False")
+GraphicsWindow.Height = (JanelaAltura)
+GraphicsWindow.Width = (JanelaLargura)
+'-----------------------------------------------------------------------------------------
+FundoAltura = (JanelaAltura /1.2)
+FundoLargura = (JanelaLargura)
+GraphicsWindow.BrushColor = ("LightBlue")
+Fundo = (Shapes.AddRectangle(FundoLargura, FundoAltura))
+SolRaio = (150)
+GraphicsWindow.BrushColor = ("Yellow")
+Sol = (Shapes.AddEllipse(SolRaio, SolRaio))
+PosicaoSolX = (0)
+PosicaoSolY = (0)
+Shapes.Move(Sol, PosicaoSolX, PosicaoSolY)
+PisoAltura = (JanelaAltura - FundoAltura)
+PisoLargura = (JanelaLargura)
+GraphicsWindow.BrushColor = ("Green")
+Piso = (Shapes.AddRectangle(PisoLargura, PisoAltura))
+PosicaoPisoY = (JanelaAltura - PisoAltura)
+Shapes.Move(Piso,0, PosicaoPisoY)
+'-----------------------------------------------------------------------------------------
+DemonAltura = (80)
+DemonLargura = (60)
+PosicaoDemonX = (Math.GetRandomNumber(JanelaLargura))
+PosicaoDemonY = (PosicaoPisoY - DemonAltura)
+'-----------------------------------------------------------------------------------------
+GraphicsWindow.BrushColor = ("DarkRed")
+Demon = (Shapes.AddRectangle(DemonLargura, DemonAltura))
+Shapes.Move(Demon, PosicaoDemonX, PosicaoDemonY)
+'-----------------------------------------------------------------------------------------
+ArmaAltura = (100)
+ArmaLargura = (60)
+GraphicsWindow.BrushColor = ("Gray")
+Arma = (Shapes.AddRectangle(ArmaLargura, ArmaAltura))
+PosicaoArmaX = (JanelaLargura /2 - ArmaLargura /2)
+PosicaoArmaY = (PosicaoPisoY + ArmaAltura /8)
+Shapes.Move(Arma, PosicaoArmaX, PosicaoArmaY)
+ArmaSwitch = (1)
+'-----------------------------------------------------------------------------------------
+GraphicsWindow.KeyDown = (KeyDown)
+'-----------------------------------------------------------------------------------------
+Sub KeyDown
+  LastKey = (GraphicsWindow.LastKey)
+  If (LastKey = "Up") Then
+    If (BulletSwitch = "True") Then
+    Else
+      BulletSwitch = ("True")
+      BulletRaio = (15)
+      GraphicsWindow.BrushColor = ("Gray")
+      Bullet = Shapes.AddEllipse(BulletRaio, BulletRaio)
+      PosicaoBulletX = (PosicaoArmaX + ArmaLargura /2 - BulletRaio/2)
+      PosicaoBulletY = (PosicaoArmaY - BulletRaio)
+      Shapes.Move(Bullet, PosicaoBulletX, PosicaoBulletY)
+      PosicaoBulletYMax = (PosicaoDemonY)
+      While (PosicaoBulletY > PosicaoBulletYMax)
+        Program.Delay(0.1)
+        PosicaoBulletY = (PosicaoBulletY - 0.01)
+        Shapes.Move(Bullet, PosicaoBulletX, PosicaoBulletY)
+        If (PosicaoBulletX + BulletRaio /2 > PosicaoDemonX And PosicaoBulletX < PosicaoDemonX + DemonLargura) Then
+          Shapes.Remove(Demon)
+          SpawnDemon()
+        EndIf
+      EndWhile
+      Shapes.Remove(Bullet)
+      BulletSwitch = ("False")
+    EndIf
+  Else
+    If (LastKey = "Left") Then
+      PosicaoSolX = (PosicaoSolX + 20)
+      Shapes.Move(Sol, PosicaoSolX, PosicaoSolY)
+      If (PosicaoSolX > JanelaLargura *1.5) Then
+        PosicaoSolX = (JanelaLargura *-1.5)
+      EndIf
+      PosicaoDemonX = (PosicaoDemonX + 15)
+      Shapes.Move(Demon, PosicaoDemonX, PosicaoDemonY)
+      If (PosicaoDemonX > JanelaLargura *1.5) Then
+        PosicaoDemonX = (JanelaLargura *-1.5)
+      EndIf
+    Else
+      If (LastKey = "Right") Then
+        PosicaoSolX = (PosicaoSolX - 20)
+        Shapes.Move(Sol, PosicaoSolX, PosicaoSolY)
+        If (PosicaoSolX < JanelaLargura *-1.5) Then
+          PosicaoSolX = (JanelaLargura *1.5)
+        EndIf
+        PosicaoDemonX = (PosicaoDemonX - 15)
+        Shapes.Move(Demon, PosicaoDemonX, PosicaoDemonY)
+        If (PosicaoDemonX < JanelaLargura *-1.5) Then
+          PosicaoDemonX = (JanelaLargura *1.5)
+        EndIf
+      EndIf
+    EndIf
+  EndIf
+EndSub
+'-----------------------------------------------------------------------------------------
+Sub SpawnDemon
+  GraphicsWindow.BrushColor = ("DarkRed")
+  Demon = (Shapes.AddRectangle(DemonLargura, DemonAltura))
+  PosicaoDemonX = (Math.GetRandomNumber(JanelaLargura))
+  PosicaoDemonYB = (Math.GetRandomNumber(DemonLargura))
+  PosicaoDemonY = (PosicaoPisoY - DemonAltura + PosicaoDemonYB)
+  Shapes.Move(Demon, PosicaoDemonX, PosicaoDemonY)
+'---------------------------------------------------------------------------------------
+  Shapes.Remove(Arma)
+  GraphicsWindow.BrushColor = ("Gray")
+  Arma = (Shapes.AddRectangle(ArmaLargura, ArmaAltura))
+  Shapes.Move(Arma, PosicaoArmaX, PosicaoArmaY)
+EndSub
